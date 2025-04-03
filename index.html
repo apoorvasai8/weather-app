@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather Application</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="icon"
+      href="https://cdn-icons-png.flaticon.com/512/7133/7133364.png"
+    />
+  </head>
+  <body>
+    <h1 id="heading">Weather App</h1>
+    <div id="container" class="container">
+      <div class="search-container">
+        <input type="text" id="city" placeholder="Enter city name" />
+        <button onclick="getWeather()">Get Weather</button><br />
+        <div class="error" id="error-message"></div>
+      </div>
+      <div class="weather-info-container" id="weather-info"></div>
+    </div>
+
+    <script>
+      const apiKey = "9bef20ccc1e7b9fc397b229c158d3be7";
+
+      function getWeather() {
+        const city = document.getElementById("city").value;
+        const errorMessage = document.getElementById("error-message");
+        const weatherInfo = document.getElementById("weather-info");
+        let container = document.getElementById("container");
+        let heading = document.getElementById("heading");
+
+        if (city === "") {
+          errorMessage.textContent = "Please enter a city name.";
+          return;
+        }
+
+        errorMessage.textContent = ""; // Clear error message if city is provided
+
+        const apiURL = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+        fetch(apiURL)
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("City not found");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            // Extracting necessary data from the response
+            const cityName = data.name;
+            const temperature = data.main.temp;
+            const feelsLike = data.main.feels_like;
+            const description = data.weather[0].description;
+            const humidity = data.main.humidity;
+            const windSpeed = data.wind.speed;
+
+            // Displaying the weather info
+            weatherInfo.innerHTML = `
+                        <h2>${cityName}</h2>
+                        <p class="data"><strong>Temperature:</strong> ${temperature}°C</p>
+                        <hr>
+                        <p class="data"><strong>Feels Like:</strong> ${feelsLike}°C</p>
+                        <hr>
+                        <p class="data"><strong>Description:</strong> ${description}</p>
+                        <hr>
+                        <p class="data"><strong>Humidity:</strong> ${humidity}%</p>
+                        <hr>
+                        <p class="data"><strong>Wind Speed:</strong> ${windSpeed} m/s</p>
+                        <hr>
+                    `;
+            console.log(data);
+          })
+          .catch((error) => {
+            errorMessage.textContent = error.message;
+            weatherInfo.innerHTML = ""; // Clear weather info in case of error
+          });
+
+        container.classList.add("container1");
+        heading.classList.add("heading");
+        document.getElementById("city").value = "";
+      }
+      document.getElementById("container").classList.remove("container1");
+      document.getElementById("heading").classList.remove("heading");
+    </script>
+  </body>
+</html>
